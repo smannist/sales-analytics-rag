@@ -3,10 +3,12 @@ from pathlib import Path
 import chromadb
 import pandas as pd
 
-from dataset import download_and_save, extract_metadata, transaction_to_nl
+from aggregates import calculate_monthly_sales
+from dataset import download_and_save
+from metadata import MONTHLY_METADATA_FIELDS, extract_metadata
+from nl_formatters import monthly_sales_nl
 
 
-# TODO: test program, will clean up and add rest later obvs
 def main() -> None:
     """Main function to run the program."""
     if not Path("superstore.csv").exists():
@@ -20,40 +22,38 @@ def main() -> None:
         print("Dataset already exists. Skipping download.")
 
     df = pd.read_csv("superstore.csv", encoding="ISO-8859-1")
+    monthly_sales = calculate_monthly_sales(df)
 
-    documents = df.apply(transaction_to_nl, axis=1).tolist()
-    metadatas = df.apply(extract_metadata, axis=1).tolist()
+    summaries = monthly_sales.apply(monthly_sales_nl, axis=1).tolist()
+    summary_metadatas = monthly_sales.apply(
+        extract_metadata, args=(MONTHLY_METADATA_FIELDS,), axis=1
+        ).tolist()
 
     client = chromadb.PersistentClient(path="./chroma_db")
-    collection = client.get_or_create_collection(name="superstore")
 
-    if collection.count() == 0:
-        batch_size = 500
-        for i in range(0, len(documents), batch_size):
-            inserted = min(i + batch_size, len(documents))
-            collection.add(
-                documents=documents[i:i + batch_size],
-                metadatas=metadatas[i:i + batch_size],
-                ids=[str(j) for j in range(i, min(i + batch_size, len(documents)))],
-            )
-            print(f"Inserted {inserted}/{len(documents)} documents.")
-        print("Finished inserting all documents.")
-    else:
-        print("Collection already exists. Skipping insertion.")
-
-    results = collection.query(
-        query_texts=["Which sales resulted in net loss in the West region?"],
-        n_results=5,
-        where={
-            "$and": [
-                {"Region": {"$eq": "West"}},
-                {"Profit": {"$lt": 0.0}},
-        ]
-    },
+    summary_collection = client.get_or_create_collection(
+        name="superstore_monthly_summaries"
     )
 
-    for doc in results["documents"][0]:
-        print(doc)
+    if summary_collection.count() == 0:
+        summary_collection.add(
+            documents=summaries,
+            metadatas=summary_metadatas,
+            ids=[str(i) for i in range(len(summaries))],
+        )
+        print(f"Inserted {len(summaries)} monthly summaries.")
+    else:
+        print("Summary collection already exists. Skipping insertion.")
+
+    summary_results = summary_collection.query(
+        query_texts=["What is the sales trend over the 4-year period?"],
+        n_results=10,
+    )
+
+    documents = summary_results.get("documents")
+    if documents:
+        for doc in documents[0]:
+            print(doc)
 
 
 if __name__ == "__main__":
