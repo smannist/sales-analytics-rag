@@ -208,3 +208,9 @@ __marimo__/
 
 # Datasets
 superstore.csv
+
+# Chroma DB
+chroma_db/
+
+# Ruff
+.ruff_cache/

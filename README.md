@@ -21,3 +21,17 @@ source .venv/bin/activate
 ```Python
 pip install uv
 ```
+
+4. Install dependencies
+
+```python
+uv sync
+```
+
+# Linting
+
+The app uses Ruff, which you can run by doing:
+
+```python
+uv run ruff check
+```
