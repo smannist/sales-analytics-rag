@@ -1,6 +1,10 @@
 import pandas as pd
 
-from nl_templates import MONTHLY_SUMMARY, TRANSACTION_DESCRIPTION
+from nl_templates import (
+    MONTHLY_SUMMARY,
+    TOP_CATEGORY_SUMMARY,
+    TRANSACTION_DESCRIPTION,
+)
 
 
 def transaction_nl(
@@ -47,5 +51,28 @@ def monthly_sales_nl(
             "Total_Sales": f"${row['Total_Sales']:,.2f}",
             "Total_Profit": f"${row['Total_Profit']:,.2f}",
             "Avg_Discount": f"{row['Avg_Discount'] * 100:.0f}%",
+        }
+    )
+
+
+def top_category_nl(
+    df: pd.DataFrame,
+    template: str = TOP_CATEGORY_SUMMARY,
+) -> str:
+    """Converts the category revenue dataframe to one natural language summary.
+
+    Args:
+        df: A pandas dataframe containing category revenue data.
+        template: A format string template for the natural language description.
+
+    Returns:
+        A natural language summary of the ranked category revenue data.
+    """
+    return template.format_map(
+        {
+            "Category_Rankings": "\n".join(
+                f"{rank}. {row.Category}: ${row.Total_Sales:,.2f} in total revenue."
+                for rank, row in enumerate(df.itertuples(index=False), start=1)
+            )
         }
     )

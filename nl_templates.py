@@ -11,3 +11,9 @@ MONTHLY_SUMMARY: str = (
     "and total profit was {Total_Profit}. "
     "The average discount that month was {Avg_Discount}."
 )
+
+
+TOP_CATEGORY_SUMMARY: str = (
+    "Top categories by total revenue, ranked from highest to lowest:\n"
+    "{Category_Rankings}"
+)
