@@ -4,7 +4,7 @@ import kagglehub
 import pandas as pd
 
 
-def download_and_save(
+def download_and_save_csv(
     dataset_location: str,
     dataset_name: str,
     output_path: str,

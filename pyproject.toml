@@ -1,7 +1,7 @@
 [project]
 name = "sales-analytics-rag"
 version = "0.1.0"
-description = "Add your description here"
+description = "RAG system for analyzing sales data using vector search and LLMs."
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
