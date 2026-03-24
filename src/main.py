@@ -3,7 +3,7 @@ from pathlib import Path
 import chromadb
 import pandas as pd
 
-import factories as _  # we need this for the factories to be registered
+import factories as _  # noqa: F401 -- current decorator pattern requires importing the factories too
 from kaggle_utils import download_and_save_csv
 from register import DOCUMENT_REGISTRY
 
