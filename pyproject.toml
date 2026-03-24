@@ -7,8 +7,8 @@ requires-python = ">=3.12"
 dependencies = [
     "chromadb>=1.5.5",
     "kagglehub>=1.0.0",
-    "mypy>=1.19.1",
     "pandas>=3.0.1",
     "pandas-stubs>=3.0.0.260204",
     "ruff>=0.15.6",
+    "ty>=0.0.24",
 ]

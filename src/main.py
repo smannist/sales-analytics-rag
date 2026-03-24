@@ -3,7 +3,7 @@ from pathlib import Path
 import chromadb
 import pandas as pd
 
-import factories as _  # noqa: F401 -- current decorator pattern requires importing the factories too
+import factories as _  # we need this for the factories to be registered
 from kaggle_utils import download_and_save_csv
 from register import DOCUMENT_REGISTRY
 
@@ -36,7 +36,7 @@ def main() -> None:
                 id_batch = [str(j) for j in range(i, i + len(data_batch))]
                 collection.add(
                     documents=data_batch,
-                    metadatas=metadata_batch,  # type: ignore[arg-type]
+                    metadatas=metadata_batch,
                     ids=id_batch,
                 )
                 inserted = min(i + 500, total)
