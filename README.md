@@ -38,7 +38,7 @@ uv run ruff check
 
 # Type check
 
-To typecheck the source folder, run this from root:
+To type check the source folder, run this from root:
 
 ```python
 uv run ty check --error all ./src
