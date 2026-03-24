@@ -35,3 +35,11 @@ The app uses Ruff, which you can run by doing:
 ```python
 uv run ruff check
 ```
+
+# Type check
+
+To typecheck the source folder, run this from root:
+
+```python
+uv run ty check --error all ./src
+```
