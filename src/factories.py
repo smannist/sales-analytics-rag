@@ -53,7 +53,6 @@ def monthly_sales(df: pd.DataFrame) -> list[Document]:
     Returns:
         A list of Documents containing monthly sales summaries.
     """
-    monthly_sales_df = calculate_monthly_sales(df)
     return [
         Document(
             page_content=(
@@ -65,7 +64,7 @@ def monthly_sales(df: pd.DataFrame) -> list[Document]:
             ),
             metadata=extract_metadata(row, MONTHLY_METADATA_FIELDS),
         )
-        for _, row in monthly_sales_df.iterrows()
+        for _, row in calculate_monthly_sales(df).iterrows()
     ]
 
 
