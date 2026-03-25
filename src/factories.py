@@ -85,12 +85,10 @@ def top_categories(df: pd.DataFrame) -> list[Document]:
                 "Top categories by total revenue, "
                 "ranked from highest to lowest:\n"
                 + "\n".join(
-                    f"{idx}. {row.Category}: "
-                    f"${row.Total_Sales:,.2f} in total revenue."
-                    for idx, row in enumerate(
-                        calculate_top_categories(df).itertuples(
-                            index=False,
-                        ),
+                    f"{idx}. {row['Category']}: "
+                    f"${row['Total_Sales']:,.2f} in total revenue."
+                    for idx, (_, row) in enumerate(
+                        calculate_top_categories(df).iterrows(),
                         start=1,
                     )
                 )
@@ -115,13 +113,13 @@ def regional_sales(df: pd.DataFrame) -> list[Document]:
                 "Sales performance by region, "
                 "ranked from highest to lowest total sales:\n"
                 + "\n".join(
-                    f"{idx}. {row.Region}: "
-                    f"${row.Total_Sales:,.2f} in total sales, "
-                    f"${row.Total_Profit:,.2f} in total profit, "
-                    f"{int(row.Total_Quantity)} units sold, "
-                    f"average discount of {row.Avg_Discount * 100:.0f}%."
-                    for idx, row in enumerate(
-                        calculate_regional_sales(df).itertuples(index=False),
+                    f"{idx}. {row['Region']}: "
+                    f"${row['Total_Sales']:,.2f} in total sales, "
+                    f"${row['Total_Profit']:,.2f} in total profit, "
+                    f"{int(row['Total_Quantity'])} units sold, "
+                    f"average discount of {row['Avg_Discount'] * 100:.0f}%."
+                    for idx, (_, row) in enumerate(
+                        calculate_regional_sales(df).iterrows(),
                         start=1,
                     )
                 )

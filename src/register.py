@@ -18,5 +18,6 @@ def register(
     Returns:
         The factory function
     """
-    DOCUMENT_REGISTRY[factory.__name__] = factory
+    name = getattr(factory, "__name__", type(factory).__name__)
+    DOCUMENT_REGISTRY[name] = factory
     return factory
