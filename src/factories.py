@@ -1,7 +1,11 @@
 import pandas as pd
 from langchain_core.documents import Document
 
-from aggregates import calculate_monthly_sales, calculate_top_categories
+from aggregates import (
+    calculate_monthly_sales,
+    calculate_regional_sales,
+    calculate_top_categories,
+)
 from metadata import (
     MONTHLY_METADATA_FIELDS,
     TRANSACTION_METADATA_FIELDS,
@@ -87,6 +91,37 @@ def top_categories(df: pd.DataFrame) -> list[Document]:
                         calculate_top_categories(df).itertuples(
                             index=False,
                         ),
+                        start=1,
+                    )
+                )
+            ),
+        )
+    ]
+
+
+@register
+def regional_sales(df: pd.DataFrame) -> list[Document]:
+    """Builds a Document from regional sales performance aggregates.
+
+    Args:
+        df: The pandas dataframe.
+
+    Returns:
+        A list containing a single Document with sales performance by region.
+    """
+    return [
+        Document(
+            page_content=(
+                "Sales performance by region, "
+                "ranked from highest to lowest total sales:\n"
+                + "\n".join(
+                    f"{idx}. {row.Region}: "
+                    f"${row.Total_Sales:,.2f} in total sales, "
+                    f"${row.Total_Profit:,.2f} in total profit, "
+                    f"{int(row.Total_Quantity)} units sold, "
+                    f"average discount of {row.Avg_Discount * 100:.0f}%."
+                    for idx, row in enumerate(
+                        calculate_regional_sales(df).itertuples(index=False),
                         start=1,
                     )
                 )

@@ -40,5 +40,36 @@ def calculate_top_categories(df: pd.DataFrame) -> pd.DataFrame:
         .groupby("Category")
         .agg(Total_Sales=("Sales", "sum"))
         .reset_index()
-        .sort_values(by="Total_Sales",ascending=False, kind="stable")
+        .sort_values(
+            by="Total_Sales",
+            ascending=False,
+            kind="stable"
+        )
+    )
+
+
+def calculate_regional_sales(df: pd.DataFrame) -> pd.DataFrame:
+    """Calculates sales performance by region.
+
+    Args:
+        df: A pandas dataframe.
+
+    Returns:
+        A pandas dataframe containing region's sales performance.
+    """
+    return (
+        df
+        .groupby("Region")
+        .agg(
+            Total_Sales=("Sales", "sum"),
+            Total_Profit=("Profit", "sum"),
+            Total_Quantity=("Quantity", "sum"),
+            Avg_Discount=("Discount", "mean"),
+        )
+        .reset_index()
+        .sort_values(
+            by="Total_Sales",
+            ascending=False,
+            kind="stable"
+        )
     )
