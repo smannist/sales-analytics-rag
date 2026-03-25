@@ -40,6 +40,5 @@ def calculate_top_categories(df: pd.DataFrame) -> pd.DataFrame:
         .groupby("Category")
         .agg(Total_Sales=("Sales", "sum"))
         .reset_index()
-        .sort_values("Total_Sales", ascending=False, kind="stable")
-        .reset_index(drop=True)
+        .sort_values(by="Total_Sales",ascending=False, kind="stable")
     )
