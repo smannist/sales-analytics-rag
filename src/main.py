@@ -1,11 +1,11 @@
 from pathlib import Path
 
 import chromadb
+import kagglehub
 import pandas as pd
 from langchain_chroma import Chroma
 
 import factories as _  # noqa: F401 -- current decorator pattern requires importing the factories too
-import kagglehub
 from register import DOCUMENT_REGISTRY
 
 
