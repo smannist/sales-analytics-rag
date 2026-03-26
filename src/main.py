@@ -5,23 +5,22 @@ import pandas as pd
 from langchain_chroma import Chroma
 
 import factories as _  # noqa: F401 -- current decorator pattern requires importing the factories too
-from kaggle_utils import download_and_save_csv
+import kagglehub
 from register import DOCUMENT_REGISTRY
 
 
 def main() -> None:
     """Main function to run the program."""
-    if not Path("superstore.csv").exists():
-        download_and_save_csv(
-            dataset_location="vivek468/superstore-dataset-final",
-            dataset_name="Sample - Superstore.csv",
-            output_path="superstore.csv",
-            encoding="ISO-8859-1",
-        )
-    else:
-        print("Dataset already exists. Skipping download.")
+    try:
+        df = pd.read_csv("superstore.csv", encoding="ISO-8859-1")
+        print("Dataset loaded from a local file.")
+    except FileNotFoundError:
+        print("Dataset not found. Downloading from Kaggle...")
+        base_path = kagglehub.dataset_download("vivek468/superstore-dataset-final")
+        dataset_path = Path(base_path) / "Sample - Superstore.csv"
+        df = pd.read_csv(dataset_path, encoding="ISO-8859-1")
+        df.to_csv("superstore.csv", index=False)
 
-    df = pd.read_csv("superstore.csv", encoding="ISO-8859-1")
     client = chromadb.PersistentClient(path="./chroma_db")
 
     for name, build in DOCUMENT_REGISTRY.items():
