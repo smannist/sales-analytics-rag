@@ -23,7 +23,7 @@ class DatasetConfig:
     ENCODING_TYPE = "ISO-8859-1"
 
 
-class VectorStoreConfig:
-    """Configuration for the Chroma vectorstore."""
+class VectorDBConfig:
+    """Stores vectorDB constants."""
     PATH = "./chroma_db"
     COLLECTION_NAME = "superstore"

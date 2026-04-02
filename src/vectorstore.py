@@ -3,7 +3,7 @@ import pandas as pd
 from langchain_chroma import Chroma
 
 import factories as _  # noqa: F401 -- current decorator pattern requires importing the factories too
-from config import CliMessage, VectorStoreConfig
+from config import CliMessage, VectorDBConfig
 from console import console
 from registry import DOCUMENT_FACTORY_REGISTRY
 
@@ -38,14 +38,14 @@ def get_vectorstore(df: pd.DataFrame) -> Chroma:
     Returns:
         The Chroma vectorstore instance.
     """
-    client = chromadb.PersistentClient(path=VectorStoreConfig.PATH)
+    client = chromadb.PersistentClient(path=VectorDBConfig.PATH)
 
     vectorstore = Chroma(
         client=client,
-        collection_name=VectorStoreConfig.COLLECTION_NAME
+        collection_name=VectorDBConfig.COLLECTION_NAME
     )
 
-    if client.get_collection(VectorStoreConfig.COLLECTION_NAME).count() == 0:
+    if client.get_collection(VectorDBConfig.COLLECTION_NAME).count() == 0:
         populate_vectorstore(vectorstore, df)
     else:
         console.print(CliMessage.ALREADY_POPULATED)
