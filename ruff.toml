@@ -37,3 +37,5 @@ convention = "google"
     "PLR2004", # Magic value used in comparison, ...
     "S311",    # Standard pseudo-random generators are not suitable for cryptographic purposes
 ]
+"cli.py" = ["I001"]
+"registry.py" = ["I001"]

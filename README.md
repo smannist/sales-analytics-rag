@@ -28,6 +28,14 @@ pip install uv
 uv sync
 ```
 
+# Running the app
+
+This assumes that you are running the command from the root folder.
+
+```python
+python3 src/app.py run
+```
+
 # Linting
 
 The app uses Ruff, which you can run by doing:
