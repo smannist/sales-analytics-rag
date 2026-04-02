@@ -6,7 +6,7 @@ import pandas as pd
 from langchain_chroma import Chroma
 
 import factories as _  # noqa: F401 -- current decorator pattern requires importing the factories too
-from register import DOCUMENT_REGISTRY
+from registry import DOCUMENT_FACTORY_REGISTRY
 
 
 def main() -> None:
@@ -29,7 +29,7 @@ def main() -> None:
     )
 
     if vectorstore._collection.count() == 0:
-        all_docs = [doc for fn in DOCUMENT_REGISTRY for doc in fn(df)]
+        all_docs = [doc for fn in DOCUMENT_FACTORY_REGISTRY for doc in fn(df)]
 
         for i in range(0, len(all_docs), 500):
             vectorstore.add_documents(all_docs[i:i + 500])

@@ -6,10 +6,10 @@ from langchain_core.documents import Document
 
 type DocumentFactory = Callable[[pd.DataFrame], list[Document]]
 
-DOCUMENT_REGISTRY: list[DocumentFactory] = []
+DOCUMENT_FACTORY_REGISTRY: list[DocumentFactory] = []
 
 
-def register(
+def document_factory(
     factory: DocumentFactory,
 ) -> DocumentFactory:
     """Registers a document factory function.
@@ -21,5 +21,5 @@ def register(
     Returns:
         The factory function
     """
-    DOCUMENT_REGISTRY.append(factory)
+    DOCUMENT_FACTORY_REGISTRY.append(factory)
     return factory

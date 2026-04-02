@@ -11,10 +11,10 @@ from metadata import (
     TRANSACTION_METADATA_FIELDS,
     extract_metadata,
 )
-from register import register
+from registry import document_factory
 
 
-@register
+@document_factory
 def transactions(df: pd.DataFrame) -> list[Document]:
     """Builds Documents from all transaction rows.
 
@@ -43,7 +43,7 @@ def transactions(df: pd.DataFrame) -> list[Document]:
     ]
 
 
-@register
+@document_factory
 def monthly_sales(df: pd.DataFrame) -> list[Document]:
     """Builds Documents from monthly sales aggregates.
 
@@ -68,7 +68,7 @@ def monthly_sales(df: pd.DataFrame) -> list[Document]:
     ]
 
 
-@register
+@document_factory
 def top_categories(df: pd.DataFrame) -> list[Document]:
     """Builds a Document from top category aggregates.
 
@@ -96,7 +96,7 @@ def top_categories(df: pd.DataFrame) -> list[Document]:
     ]
 
 
-@register
+@document_factory
 def regional_sales(df: pd.DataFrame) -> list[Document]:
     """Builds a Document from regional sales performance aggregates.
 
