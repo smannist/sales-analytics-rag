@@ -23,26 +23,25 @@ def main() -> None:
 
     client = chromadb.PersistentClient(path="./chroma_db")
 
-    for name, build in DOCUMENT_REGISTRY.items():
-        vectorstore = Chroma(
-            client=client,
-            collection_name=name,
-        )
-        if vectorstore._collection.count() == 0:  # noqa: SLF001
-            docs = build(df)
-            for i in range(0, len(docs), 500):
-                vectorstore.add_documents(docs[i:i + 500])
-                inserted = min(i + 500, len(docs))
-                print(f"  [{name}] {inserted}/{len(docs)} inserted.")
-            print(f"Finished inserting into '{name}'.")
-        else:
-            print(f"Collection '{name}' already populated. Skipping.")
-
-    documents = Chroma(
+    vectorstore = Chroma(
         client=client,
-        collection_name="top_categories",
-    ).similarity_search(
+        collection_name="superstore"
+    )
+
+    if vectorstore._collection.count() == 0:
+        all_docs = [doc for fn in DOCUMENT_REGISTRY for doc in fn(df)]
+
+        for i in range(0, len(all_docs), 500):
+            vectorstore.add_documents(all_docs[i:i + 500])
+            print(f"{min(i + 500, len(all_docs))}/{len(all_docs)} inserted.")
+        
+        print("Finished inserting all documents.")
+    else:
+        print("Collection already populated. Skipping.")
+
+    documents = vectorstore.similarity_search(
         "Can you give me a summary of top categories by revenue?",
+        k=1
     )
 
     for doc in documents:

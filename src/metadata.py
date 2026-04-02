@@ -1,5 +1,8 @@
 import pandas as pd
 
+type Metadata = dict[str, str | float | int]
+
+
 TRANSACTION_METADATA_FIELDS: list[str] = [
     "Order Date",
     "Category",
@@ -24,7 +27,7 @@ MONTHLY_METADATA_FIELDS: list[str] = [
 def extract_metadata(
     row: pd.Series,
     fields: list[str],
-) -> dict[str, str | float | int]:
+) -> Metadata:
     """Extracts selected metadata fields from a row.
 
     Args:

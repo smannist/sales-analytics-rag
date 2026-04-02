@@ -3,12 +3,15 @@ from collections.abc import Callable
 import pandas as pd
 from langchain_core.documents import Document
 
-DOCUMENT_REGISTRY: dict[str, Callable[[pd.DataFrame], list[Document]]] = {}
+
+type DocumentFactory = Callable[[pd.DataFrame], list[Document]]
+
+DOCUMENT_REGISTRY: list[DocumentFactory] = []
 
 
 def register(
-    factory: Callable[[pd.DataFrame], list[Document]],
-) -> Callable[[pd.DataFrame], list[Document]]:
+    factory: DocumentFactory,
+) -> DocumentFactory:
     """Registers a document factory function.
 
     Args:
@@ -18,6 +21,5 @@ def register(
     Returns:
         The factory function
     """
-    name = getattr(factory, "__name__", type(factory).__name__)
-    DOCUMENT_REGISTRY[name] = factory
+    DOCUMENT_REGISTRY.append(factory)
     return factory
