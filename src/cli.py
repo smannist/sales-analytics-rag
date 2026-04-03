@@ -1,11 +1,20 @@
+import pandas as pd
 import typer
+from langchain_chroma import Chroma
 from rich.panel import Panel
 from rich.text import Text
 
+
+import factories as _  # noqa: F401 -- current decorator pattern requires importing the factories too
 from config import CliMessage
 from console import console
-from dataset import load_dataset
-from vectorstore import get_vectorstore
+from dataset import download_dataset, load_dataset
+from registry import DOCUMENT_FACTORY_REGISTRY
+from vectorstore import (
+    get_vectorstore,
+    populate_vectorstore,
+    is_vectorstore_empty
+)
 
 
 app = typer.Typer(rich_markup_mode="rich")
@@ -22,20 +31,34 @@ def run(
     vectorstore = ctx.obj
 
     console.print()
-    console.print(CliMessage.QUERY_HINT)
+    console.print(CliMessage.QUERY_HINT, style="bold")
 
     while True:
-        question = console.input(CliMessage.USER_QUESTION).strip()
+        question = console.input(
+            Text(
+                CliMessage.INPUT_PROMPT,
+                style="bold cyan"
+            )
+        ).strip()
 
         if not question:
             continue
 
-        with console.status(CliMessage.SEARCHING):
+        with console.status(
+            Text(
+                CliMessage.SEARCHING,
+                style="bold green"
+            )
+        ):
             documents = vectorstore.similarity_search(question, k=results)
 
         console.print()
+
         for index, document in enumerate(documents, start=1):
-            title = Text(f"Result {index}/{len(documents)}", style="bold cyan")
+            title = Text(
+                f"Result {index}/{len(documents)}",
+                style="bold cyan"
+            )
             console.print(
                 Panel(
                 document.page_content,
@@ -45,12 +68,71 @@ def run(
             )
         )
 
-        console.print(CliMessage.NEW_QUERY)
-        console.print("\n")
+        console.print(CliMessage.NEW_QUERY, style="dim")
+        console.print()
 
 
 @app.callback(invoke_without_command=True)
 def setup(ctx: typer.Context) -> None:
     """Load dataset and build vectorstore, storing it in context."""
-    df = load_dataset()
-    ctx.obj = get_vectorstore(df)
+    df = _get_dataset()
+    vectorstore = get_vectorstore()
+
+    if is_vectorstore_empty(vectorstore):
+        vectorstore = _build_vectorstore(df, vectorstore)
+    else:
+        console.print(CliMessage.ALREADY_POPULATED, style="dim")
+
+    ctx.obj = vectorstore
+
+
+def _get_dataset() -> pd.DataFrame:
+    """Loads the dataset, if not present, then downloads it.
+
+    Returns:
+        The dataset as a pandas DataFrame.
+    """
+    try:
+        df = load_dataset()
+        console.print(CliMessage.DATASET_EXISTS, style="dim")
+    except FileNotFoundError:
+        console.print(CliMessage.DATASET_DOWNLOADING, style="yellow")
+        download_dataset()
+        df = load_dataset()
+        console.print(CliMessage.DATASET_DOWNLOADED, style="green")
+    return df
+
+
+def _build_vectorstore(
+        df: pd.DataFrame,
+        vectorstore: Chroma
+) -> Chroma:
+    """Builds the vectorstore.
+
+    Args:
+        df: The pandas DataFrame.
+        vectorstore: The Chroma vectorstore.
+
+    Returns:
+        The Chroma vectorstore instance.
+    """
+    documents = [
+         doc
+         for document_factory in DOCUMENT_FACTORY_REGISTRY
+         for doc in document_factory(df)
+    ]
+
+    with console.status(
+        Text(
+            CliMessage.INSERTING,
+            style="bold green"
+        )
+    ):
+        for inserted, total in populate_vectorstore(vectorstore, documents):
+            console.print(
+                f"{inserted}/{total} inserted.",
+                style="dim"
+            )
+        console.print(CliMessage.INSERTED, style="green")
+
+    return vectorstore

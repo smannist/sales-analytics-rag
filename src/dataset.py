@@ -30,7 +30,7 @@ def load_dataset(
         filename: str = DatasetConfig.FILENAME,
         encoding_type: str = DatasetConfig.ENCODING_TYPE
 ) -> pd.DataFrame:
-    """Load the dataset from a local CSV file, if not present, download first.
+    """Load the dataset from a local CSV file.
 
     Args:
         filename: The name of the CSV file to load.
@@ -39,8 +39,4 @@ def load_dataset(
     Returns:
         The loaded dataset as a pandas DataFrame.
     """
-    try:
-        return pd.read_csv(filename, encoding=encoding_type)
-    except FileNotFoundError:
-        download_dataset(filename)
-        return pd.read_csv(filename, encoding=encoding_type)
+    return pd.read_csv(filename, encoding=encoding_type)

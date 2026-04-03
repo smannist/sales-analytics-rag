@@ -1,18 +1,20 @@
 class CliMessage:
     """Stores CLI display message text constants."""
-    # Query loop related messages
-    USER_QUESTION = "[bold cyan]>[/bold cyan] "
-    QUERY_HINT = "[bold]Enter a query (Ctrl+C to exit):[/bold]"
-    SEARCHING = "[bold green]Searching..."
-    NEW_QUERY = "[dim]Enter another query or Ctrl+C to exit.[/dim]"
+    # Query loop related constants
+    INPUT_PROMPT = "> "
+    QUERY_HINT = "Enter a query (Ctrl+C to exit):"
+    SEARCHING = "Searching..."
+    NEW_QUERY = "Enter another query or Ctrl+C to exit."
 
-    # Dataset related messages
-    DOWNLOADING = "[yellow]Dataset not found. Downloading from Kaggle...[/yellow]"
+    # Dataset related constants
+    DATASET_EXISTS = "Dataset already exists. Skipping download."
+    DATASET_DOWNLOADING = "Dataset not found. Downloading from Kaggle..."
+    DATASET_DOWNLOADED = "Dataset downloaded successfully."
 
-    # Vectorstore related messages
-    INSERTING = "[bold green]Inserting documents..."
-    INSERTED = "[green]Finished inserting all documents.[/green]"
-    ALREADY_POPULATED = "[dim]Collection already populated. Skipping.[/dim]"
+    # Vectorstore related constants
+    INSERTING = "Inserting documents..."
+    INSERTED = "Finished inserting all documents."
+    ALREADY_POPULATED = "Collection already populated. Skipping."
 
 
 class DatasetConfig:
