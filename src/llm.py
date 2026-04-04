@@ -67,7 +67,7 @@ class RetrievalPlan(BaseModel):
     )
 
 
-@traceable(run_type="llm", name="Query classifier")
+@traceable(run_type="llm", name="Retrieval plan")
 def determine_retrieval_plan(question: str) -> RetrievalPlan:
     """Ask the LLM to determine the user's question into a retrieval plan.
 
