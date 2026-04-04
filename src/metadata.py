@@ -15,12 +15,13 @@ TRANSACTION_METADATA_FIELDS: list[str] = [
 ]
 
 
-MONTHLY_METADATA_FIELDS: list[str] = [
-    "Month",
+_AGGREGATE_METADATA_BASE: list[str] = ["Total_Sales", "Total_Profit", "Avg_Discount"]
+MONTHLY_METADATA_FIELDS: list[str] = ["Month", "Year", *_AGGREGATE_METADATA_BASE]
+MONTHLY_TOTAL_METADATA_FIELDS: list[str] = ["Month", *_AGGREGATE_METADATA_BASE]
+YEARLY_METADATA_FIELDS: list[str] = [
     "Year",
-    "Total_Sales",
-    "Total_Profit",
-    "Avg_Discount",
+    *_AGGREGATE_METADATA_BASE,
+    "Total_Quantity"
 ]
 
 

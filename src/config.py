@@ -1,5 +1,8 @@
 class CliMessage:
     """Stores CLI display message text constants."""
+    # General
+    WELCOME = "Welcome to Superstore Analytics!"
+
     # Query loop related constants
     INPUT_PROMPT = "> "
     QUERY_HINT = "Enter a query (Ctrl+C to exit):"
@@ -29,3 +32,8 @@ class VectorDBConfig:
     """Stores vectorDB constants."""
     PATH = "./chroma_db"
     COLLECTION_NAME = "superstore"
+
+
+class OpenAIConfig:
+    """Stores OpenAI constants."""
+    MODEL = "gpt-4o-mini"

@@ -1,6 +1,7 @@
 import pandas as pd
 import typer
 from langchain_chroma import Chroma
+from rich.markdown import Markdown
 from rich.panel import Panel
 from rich.text import Text
 
@@ -9,6 +10,7 @@ import factories as _  # noqa: F401 -- current decorator pattern requires import
 from config import CliMessage
 from console import console
 from dataset import download_dataset, load_dataset
+from llm import retrieve, generate_answer, determine_retrieval_plan
 from registry import DOCUMENT_FACTORY_REGISTRY
 from vectorstore import (
     get_vectorstore,
@@ -21,15 +23,18 @@ app = typer.Typer(rich_markup_mode="rich")
 
 
 @app.command()
-def run(
-    ctx: typer.Context,
-    results: int = typer.Option(
-        1, "--results", "-k", help="Number of results to return."
-    )
-) -> None:
+def run(ctx: typer.Context) -> None:
     """The main CLI for the app."""
     vectorstore = ctx.obj
 
+    console.print()
+    console.print(
+        Panel(
+            CliMessage.WELCOME,
+            style="bold cyan",
+            padding=(1, 2)
+        )
+    )
     console.print()
     console.print(CliMessage.QUERY_HINT, style="bold")
 
@@ -50,24 +55,21 @@ def run(
                 style="bold green"
             )
         ):
-            documents = vectorstore.similarity_search(question, k=results)
+            plan = determine_retrieval_plan(question)      # type: ignore[arg-type]
+            documents = retrieve(vectorstore, plan)        # type: ignore[arg-type]
+            answer = generate_answer(question, documents)  # type: ignore[arg-type]
 
         console.print()
-
-        for index, document in enumerate(documents, start=1):
-            title = Text(
-                f"Result {index}/{len(documents)}",
-                style="bold cyan"
-            )
-            console.print(
-                Panel(
-                document.page_content,
-                title=title,
-                border_style="cyan",
-                padding=(1, 2),
+        console.print(
+            Panel(
+                Markdown(answer),
+                title="Answer",
+                border_style="green",
+                padding=(1, 2)
             )
         )
 
+        console.print()
         console.print(CliMessage.NEW_QUERY, style="dim")
         console.print()
 
