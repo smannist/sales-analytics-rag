@@ -6,4 +6,4 @@
 4. Check that some other things are not missing from config, add them if there are any
 5. ~~Perhaps refactor later and separate messaging from other logic funcs, moving them to CLI would make more sense imo~~
 6. Improve prompts - works, but output could be nicer especially for enricher
-7. Maybe langchain SelfQueryRetriever? I still feel like custom might work better for the app tho
+7. ~~Maybe langchain SelfQueryRetriever? I still feel like custom might work better for the app tho~~ feels like it doesnt really fit the use case

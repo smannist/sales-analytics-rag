@@ -1,14 +1,13 @@
-import os
-import warnings
 from collections import defaultdict
 from enum import StrEnum
+from typing import Literal
 
 from dotenv import load_dotenv
 from langchain_chroma import Chroma
 from langchain_core.documents import Document
+from langchain_core.messages import BaseMessage, HumanMessage, SystemMessage
+from langchain_openai import ChatOpenAI
 from langsmith import traceable
-from langsmith.wrappers import wrap_openai
-from openai import OpenAI
 from pydantic import BaseModel, Field
 
 from config import OpenAIConfig
@@ -17,11 +16,12 @@ from utils import load_file
 load_dotenv(override=True)
 
 
-client = wrap_openai(OpenAI(api_key=os.getenv("OPENAI_API_KEY")))
+model = ChatOpenAI(model=OpenAIConfig.MODEL)
 
 
 PROMPT_RETRIEVAL_STRATEGY = load_file("prompts/retrieval_strategy.txt")
 PROMPT_DATA_ENRICHER = load_file("prompts/data_enricher.txt")
+PROMPT_FOLLOWUP_ANSWER = load_file("prompts/followup_answer.txt")
 
 
 class MetadataFilter(BaseModel):
@@ -29,24 +29,30 @@ class MetadataFilter(BaseModel):
     field: str = Field(
         description="Metadata field name, e.g. 'Category', 'Region', 'State', 'Year'"
     )
-    operator: str = Field(
-        description="Comparison operator: '$eq', '$gt', '$gte', '$lt', '$lte'",
-        default="$eq"
+    operator: Literal["$eq", "$gt", "$gte", "$lt", "$lte"] = Field(
+        description=(
+            "Comparison operator. To express OR across multiple values of "
+            "the same field (e.g. Year 2014 OR 2015), emit multiple $eq "
+            "filters with the same field — they will be combined into an "
+            "$in clause by the caller. Do NOT use $or here."
+        ),
+        default="$eq",
     )
     value: str | int | float = Field(
         description="The value to filter by"
     )
 
 
-class RetrievalStrategy(StrEnum):
-    """Narrow down vectorstore retrieval strategy."""
+class AnswerStrategy(StrEnum):
+    """Determinate answer strategy: filters, just similarity or follow up."""
     METADATA_FILTER = "metadata_filter"
     SIMILARITY = "similarity"
+    FOLLOW_UP = "follow_up"
 
 
 class RetrievalPlan(BaseModel):
     """Full retrieval plan: strategy, filters, etc."""
-    strategy: RetrievalStrategy = Field(
+    strategy: AnswerStrategy = Field(
         description="The retrieval strategy to use"
     )
     filters: list[MetadataFilter] = Field(
@@ -59,77 +65,111 @@ class RetrievalPlan(BaseModel):
     )
     k: int = Field(
         default=3,
+        ge=1,
         description=(
-            "Number of documents to retrieve. Infer from the question: "
-            "e.g., 4 for a 4-year trend, 12 for monthly breakdown, "
-            "1 for a single-entity lookup. Default to 3 when unclear."
+            "Number of documents to retrieve. Must be at least 1. "
+            "Infer from the question: e.g., 4 for a 4-year trend, "
+            "12 for monthly breakdown, 1 for a single-entity lookup. "
+            "Default to 3 when unclear."
         )
     )
 
 
 @traceable(run_type="llm", name="Retrieval plan")
-def determine_retrieval_plan(question: str) -> RetrievalPlan:
+def determine_retrieval_plan(
+        question: str,
+        history: list[BaseMessage],
+) -> RetrievalPlan:
     """Ask the LLM to determine the user's question into a retrieval plan.
 
     Args:
         question: The user's query string.
+        history: Prior chat history to provide context for follow-ups.
 
     Returns:
         The full retrieval plan.
     """
-    with warnings.catch_warnings():  # parse gives false pydantic errors
-        warnings.simplefilter("ignore", UserWarning)
-        completion = client.chat.completions.parse(
-            model=OpenAIConfig.MODEL,
-            messages=[
-                {
-                    "role": "system",
-                    "content": PROMPT_RETRIEVAL_STRATEGY
-                },
-                {
-                    "role": "user",
-                    "content": question
-                },
-            ],
-            response_format=RetrievalPlan,
+    try:
+        structured_model = model.with_structured_output(RetrievalPlan)
+        return structured_model.invoke(  # type: ignore[return-value]
+            [
+                SystemMessage(
+                    content=PROMPT_RETRIEVAL_STRATEGY
+                ),
+                *history,
+                HumanMessage(
+                    content=question
+                ),
+            ]
         )
-
-    if not completion.choices[0].message.parsed:
+    except Exception:  # just in case bad things happen
         return RetrievalPlan(
-            strategy=RetrievalStrategy.SIMILARITY,
+            strategy=AnswerStrategy.SIMILARITY,
             filters=[],
             user_query=question,
         )
 
-    return completion.choices[0].message.parsed
 
-
-@traceable(run_type="llm", name="Generated Answer")
-def generate_answer(question: str, documents: list[Document]) -> str:
+@traceable(run_type="llm", name="Enricher Answer")
+def generate_answer(
+        question: str,
+        documents: list[Document],
+        history: list[BaseMessage],
+) -> str:
     """Generates an enriched answer from the retrieved documents.
 
     Args:
         question: The user's query string.
         documents: Documents from the vector store.
+        history: Prior chat history to provide context for follow-ups.
 
     Returns:
         LLM-generated answer based on the documents.
     """
-    context = "\n\n".join(doc.page_content for doc in documents)
-    response = client.chat.completions.create(
-        model=OpenAIConfig.MODEL,
-        messages=[
-            {
-                "role": "system",
-                "content": PROMPT_DATA_ENRICHER.format(context=context)
-            },
-            {
-                "role": "user",
-                "content": question
-            },
-        ],
+    response = model.invoke(
+        [
+            SystemMessage(
+                content=PROMPT_DATA_ENRICHER.format(
+                    context="\n\n".join(
+                        doc.page_content for doc in documents
+                    )
+                )
+            ),
+            *history,
+            HumanMessage(
+                content=question
+            ),
+        ]
     )
-    return response.choices[0].message.content or ""
+    return response.content
+
+
+@traceable(run_type="llm", name="Follow-up Answer")
+def generate_followup_answer(
+        question: str,
+        history: list[BaseMessage],
+) -> str:
+    """Answer a follow-up question purely from prior conversation context.
+
+    Args:
+        question: The user's follow-up query.
+        history: Prior chat history containing the answer context.
+
+    Returns:
+        LLM-generated answer based on prior conversation.
+    """
+    response = model.invoke(
+        [
+            SystemMessage(
+                content=PROMPT_FOLLOWUP_ANSWER
+            ),
+            *history,
+            HumanMessage(
+                content=question
+            ),
+        ]
+    )
+    return response.content
 
 
 @traceable(run_type="retriever", name="Vector Retrieval")
@@ -147,17 +187,21 @@ def retrieve(vectorstore: Chroma, plan: RetrievalPlan) -> list[Document]:
         The retrieved documents from vectorstore.
     """
     where_clause = None
-    if plan.strategy == RetrievalStrategy.METADATA_FILTER:
+    if plan.strategy == AnswerStrategy.METADATA_FILTER:
         where_clause = filters_to_where_clause(plan.filters)
-    docs = vectorstore.similarity_search(plan.user_query, k=plan.k, filter=where_clause)
-    if docs and all("Total_Sales" in doc.metadata for doc in docs):
+    docs = vectorstore.similarity_search(
+        plan.user_query,
+        k=plan.k,
+        filter=where_clause
+    )
+    if all("Total_Sales" in doc.metadata for doc in docs):  # sort if total sales are present, cause llm had trouble otherwise
         docs.sort(key=lambda d: d.metadata["Total_Sales"], reverse=True)
     return docs
 
 
 # langchain has built-in QueryRetriever (self, multi),
-# but looks complex and I would need to learn more about it
-# setup works, but maybe refactor this to use it
+# but afaik it's prompt templates cannot be modified
+# so this might be better for our use case??
 def filters_to_where_clause(filters: list[MetadataFilter]) -> dict | None:
     """Convert filters into a where clause for Chroma querying.
 

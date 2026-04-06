@@ -212,5 +212,5 @@ superstore.csv
 # Chroma DB
 chroma_db/
 
-# Ruff
-.ruff_cache/
+# Chat history
+chat_history.json

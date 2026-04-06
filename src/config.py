@@ -7,6 +7,7 @@ class CliMessage:
     INPUT_PROMPT = "> "
     QUERY_HINT = "Enter a query (Ctrl+C to exit):"
     SEARCHING = "Searching..."
+    FOLLOWING_UP = "Following up..."
     NEW_QUERY = "Enter another query or Ctrl+C to exit."
 
     # Dataset related constants
@@ -37,3 +38,9 @@ class VectorDBConfig:
 class OpenAIConfig:
     """Stores OpenAI constants."""
     MODEL = "gpt-4o-mini"
+
+
+class ChatHistoryConfig:
+    """Stores chat history constants."""
+    FILE_PATH = "./chat_history.json"
+    MAX_HISTORY_TOKENS = 6000
