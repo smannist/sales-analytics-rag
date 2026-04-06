@@ -8,4 +8,5 @@
 - Current factories need to operate over the df's twice - it would be faster to build a list and do data and metadata in one go
   but as a tradeoff I think this is more readable + dataset is not large anyways
 - The prompts matter a lot, say if we use one same prompt for follow up and general, this can cause contradictions for e.g. "answer only sales data related questions" gets triggered if the user as "why do you think november performs better than march?"
+- Retrieval needs very specified prompts or fails miserably
 - History is really costly, since we need to keep the messahes in context window.
