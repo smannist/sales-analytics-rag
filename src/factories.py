@@ -8,6 +8,8 @@ from aggregates import (
     calculate_monthly_totals,
     calculate_regional_sales,
     calculate_top_categories,
+    calculate_top_discounted_products,
+    calculate_top_sub_categories,
     calculate_yearly_sales,
 )
 from metadata import (
@@ -169,6 +171,37 @@ def top_categories(df: pd.DataFrame) -> list[Document]:
 
 
 @document_factory
+def top_sub_categories(df: pd.DataFrame) -> list[Document]:
+    """Builds a Document from sub-category profit margin aggregates.
+
+    Args:
+        df: The pandas dataframe.
+
+    Returns:
+        Sub-categories ranked by profit margin.
+    """
+    return [
+        Document(
+            page_content=(
+                "Sub-categories by profit margin (profit / sales), "
+                "ranked from highest to lowest:\n"
+                + "\n".join(
+                    f"{idx}. {row['Sub-Category']} ({row['Category']}): "
+                    f"{row['Profit_Margin'] * 100:.2f}% margin, "
+                    f"${row['Total_Sales']:,.2f} in total sales, "
+                    f"${row['Total_Profit']:,.2f} in total profit."
+                    for idx, (_, row) in enumerate(
+                        calculate_top_sub_categories(df).iterrows(),
+                        start=1,
+                    )
+                )
+            ),
+            metadata={"doc_type": "sub_category"},
+        )
+    ]
+
+
+@document_factory
 def regional_sales(df: pd.DataFrame) -> list[Document]:
     """Builds a Document from regional sales performance aggregates.
 
@@ -196,5 +229,38 @@ def regional_sales(df: pd.DataFrame) -> list[Document]:
                 )
             ),
             metadata={"doc_type": "regional"},
+        )
+    ]
+
+
+@document_factory
+def top_discounted_products(df: pd.DataFrame) -> list[Document]:
+    """Builds a Document listing the top 10 most frequently discounted products.
+
+    Args:
+        df: The pandas dataframe.
+
+    Returns:
+        A list containing a single Document with the top 10 products
+        most frequently sold at a discount.
+    """
+    return [
+        Document(
+            page_content=(
+                "Top 10 products most frequently sold at a discount:\n"
+                + "\n".join(
+                    f"{idx}. {row['Product Name']} "
+                    f"({row['Sub-Category']}, {row['Category']}): "
+                    f"discounted in {int(row['Discounted_Count'])} of "
+                    f"{int(row['Order_Count'])} orders "
+                    f"({row['Discount_Rate'] * 100:.0f}% discount rate), "
+                    f"average discount {row['Avg_Discount'] * 100:.0f}%."
+                    for idx, (_, row) in enumerate(
+                        calculate_top_discounted_products(df).iterrows(),
+                        start=1,
+                    )
+                )
+            ),
+            metadata={"doc_type": "discounted_product"},
         )
     ]
