@@ -22,6 +22,7 @@ from llm import (
     model,
     retrieve,
 )
+from utils import rank_by_total_sales
 from registry import DOCUMENT_FACTORY_REGISTRY
 from vectorstore import (
     get_vectorstore,
@@ -92,6 +93,7 @@ def run(ctx: typer.Context) -> None:
                 answer = generate_followup_answer(question, history)  # type: ignore[arg-type]
             else:
                 documents = retrieve(vectorstore, plan)
+                documents = rank_by_total_sales(documents)
                 answer = generate_answer(question, documents, history)  # type: ignore[arg-type]
             chat_history.add_user_message(question)
             chat_history.add_ai_message(answer)

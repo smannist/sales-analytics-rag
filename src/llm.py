@@ -176,9 +176,6 @@ def generate_followup_answer(
 def retrieve(vectorstore: Chroma, plan: RetrievalPlan) -> list[Document]:
     """Execute the retrieval strategy defined in the retrieval plan.
 
-    Results are sorted by Total_Sales descending when all retrieved
-    documents carry that metadata field.
-
     Args:
         vectorstore: The Chroma vectorstore.
         plan: The retrieval plan containing strategy, filters, query, and k.
@@ -189,14 +186,11 @@ def retrieve(vectorstore: Chroma, plan: RetrievalPlan) -> list[Document]:
     where_clause = None
     if plan.strategy == AnswerStrategy.METADATA_FILTER:
         where_clause = filters_to_where_clause(plan.filters)
-    docs = vectorstore.similarity_search(
+    return vectorstore.similarity_search(
         plan.user_query,
         k=plan.k,
         filter=where_clause
     )
-    if all("Total_Sales" in doc.metadata for doc in docs):  # sort if total sales are present, cause llm had trouble otherwise
-        docs.sort(key=lambda d: d.metadata["Total_Sales"], reverse=True)
-    return docs
 
 
 # langchain has built-in QueryRetriever (self, multi),
