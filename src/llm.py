@@ -16,7 +16,7 @@ from utils import load_file
 load_dotenv(override=True)
 
 
-model = ChatOpenAI(model=OpenAIConfig.MODEL)
+model = ChatOpenAI(model_name=OpenAIConfig.MODEL)
 
 
 PROMPT_RETRIEVAL_STRATEGY = load_file("prompts/retrieval_strategy.txt")
@@ -102,7 +102,7 @@ def determine_retrieval_plan(
                 ),
             ]
         )
-    except Exception:  # just in case bad things happen
+    except Exception:  # noqa: BLE001, just in case bad things happen but ruff doesnt like my style
         return RetrievalPlan(
             strategy=AnswerStrategy.SIMILARITY,
             filters=[],

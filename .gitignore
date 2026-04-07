@@ -211,6 +211,3 @@ superstore.csv
 
 # Chroma DB
 chroma_db/
-
-# Chat history
-chat_history.json

@@ -56,7 +56,9 @@ def populate_vectorstore(
     """
     total = len(documents)
     for i in range(0, total, VectorDBConfig.INSERTION_BATCH_SIZE):
-        vectorstore.add_documents(documents[i : i + VectorDBConfig.INSERTION_BATCH_SIZE])
+        vectorstore.add_documents(
+            documents[i : i + VectorDBConfig.INSERTION_BATCH_SIZE]
+        )
         yield min(i + VectorDBConfig.INSERTION_BATCH_SIZE, total), total
 
 

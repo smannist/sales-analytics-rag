@@ -23,3 +23,13 @@ def document_factory(
     """
     DOCUMENT_FACTORY_REGISTRY.append(factory)
     return factory
+
+
+def load_document_factories() -> list[DocumentFactory]:
+    """Imports factories, registers them, returns the registry.
+
+    Returns:
+        The populated document factory registry.
+    """
+    import factories  # noqa: F401, PLC0415 -- local import breaks the registry<->factories cycle; imported for decorator side effects, maybe it just better to have gigantic list and manually insert
+    return DOCUMENT_FACTORY_REGISTRY

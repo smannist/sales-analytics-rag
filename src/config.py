@@ -43,5 +43,4 @@ class OpenAIConfig:
 
 class ChatHistoryConfig:
     """Stores chat history constants."""
-    FILE_PATH = "./chat_history.json"
     MAX_HISTORY_TOKENS = 6000
