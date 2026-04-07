@@ -141,7 +141,7 @@ def generate_answer(
             ),
         ]
     )
-    return response.content
+    return response.text
 
 
 @traceable(run_type="llm", name="Follow-up Answer")
@@ -169,7 +169,7 @@ def generate_followup_answer(
             ),
         ]
     )
-    return response.content
+    return response.text
 
 
 @traceable(run_type="retriever", name="Vector Retrieval")
