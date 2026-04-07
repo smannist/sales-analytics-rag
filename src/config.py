@@ -33,6 +33,7 @@ class VectorDBConfig:
     """Stores vectorDB constants."""
     PATH = "./chroma_db"
     COLLECTION_NAME = "superstore"
+    INSERTION_BATCH_SIZE = 500
 
 
 class OpenAIConfig:

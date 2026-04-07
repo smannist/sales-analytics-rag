@@ -87,7 +87,10 @@ def run(ctx: typer.Context) -> None:
         )
 
         with console.status(
-            Text(status_message, style="bold green")
+            Text(
+                status_message,
+                style="bold green"
+            )
         ):
             if plan.strategy == AnswerStrategy.FOLLOW_UP:
                 answer = generate_followup_answer(question, history)  # type: ignore[arg-type]

@@ -54,11 +54,10 @@ def populate_vectorstore(
     Yields:
         A tuple of (inserted_count, total_count) after each batch.
     """
-    batch_size = 500
     total = len(documents)
-    for i in range(0, total, batch_size):
-        vectorstore.add_documents(documents[i : i + batch_size])
-        yield min(i + batch_size, total), total
+    for i in range(0, total, VectorDBConfig.INSERTION_BATCH_SIZE):
+        vectorstore.add_documents(documents[i : i + VectorDBConfig.INSERTION_BATCH_SIZE])
+        yield min(i + VectorDBConfig.INSERTION_BATCH_SIZE, total), total
 
 
 def get_vectorstore() -> Chroma:
@@ -76,4 +75,4 @@ def get_vectorstore() -> Chroma:
 
 def is_vectorstore_empty(vectorstore: Chroma) -> bool:
     """Return True if the vectorstore has no documents."""
-    return vectorstore._collection.count() == 0  # noqa: SLF001
+    return len(vectorstore.get(limit=1)["ids"]) == 0
