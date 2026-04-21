@@ -211,3 +211,6 @@ superstore.csv
 
 # Chroma DB
 chroma_db/
+
+# LLM evals
+.deepeval

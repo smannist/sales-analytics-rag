@@ -2,6 +2,32 @@
 
 Data Warehousing and Business Intelligence course project. Implements a Retrieval-Augmented Generation (RAG) system for analyzing real-world sales data using vector search and LLMs to generate insights into trends and patterns.
 
+# Architecture
+
+The app is fairly simple example of a RAG pipeline. It consists of three parts: retrieval planning, potential follow up answering and enrichener:
+
+1. At retrieval planning stage, based on the user query, LLM decides which strategy to use (follow up vs no follow up) and which filters to apply for VectorDB search, e.g. meta filters and the number of documents to retrieve.
+2. If the strategy is follow up, just use history data and answer based on that. Otherwise, fetch data from VectorDB from analytics.
+3. Second LLM enrichens the output, skipped if follow up.
+4. The user can ask follow up questions if they want, in which case we move back to 2.
+
+Roughly this looks like:
+
+![arch](docs/arch_flow.png)
+
+The app can provide answer to questions related to the superstore dataset, such as:
+
+1. What is the sales trend over the 4-year period?
+2. Which months show the highest sales? Is there seasonality?
+3. Which product category generates the most revenue?
+4. What sub-categories have the highest profit margins?
+5. Which region has the best sales performance?
+6. Compare Technology vs. Furniture sales trends
+7. How does the West region compare to the East in terms of profit?
+8. Any user follow up questions, e.g., "Why does west perform better than ...."
+
+Note: the app is not really production ready, but more like a demoing app for demonstrating how RAG works and how LLMs can be used for simple analytics.
+
 # Setup
 
 1. Ready virtual environment
@@ -51,3 +77,27 @@ To type check the source folder, run this from root:
 ```python
 uv run ty check --error all ./src
 ```
+
+# Testing
+
+The app contains a few tests, it's recommended to run them separately:
+
+E.g. LLM evaluation uses LLM-as-a-judge style, with deepevals. Running just the encricher tests works as follows:
+
+```python
+uv run deepeval test run tests/evals/test_eval_rag_enricher.py
+```
+
+these can also be explored more deeply at DeepEval website, but requires an API KEY.
+
+Unit tests use pytest, and runs with:
+
+```python
+pytest tests/units
+```
+
+Example evaluator run with deepevals on CLI:
+
+![eval](docs/evals.png)
+
+Evaluator defaults to gpt-4.1, but can be changed in test files.

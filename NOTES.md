@@ -10,3 +10,5 @@
 - Retrieval needs very specified prompts or fails miserably
 - Memory implemented with langchain's InMemoryChatMessageHistory -- per-session only, not persisted
 - Memory on average is really costly, since we need to keep the messages in context window.
+- LangSmith has built-in evaluators, but require a lot more setup, and afaik can't be run through the console or git pipeline,
+  which is why I just used deepeval as an example. Doesn't really matter here, but in a production environment, it might be the better choice.
