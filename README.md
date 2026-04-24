@@ -81,7 +81,7 @@ uv run ty check --error all ./src
 
 The app contains a few tests, it's recommended to run them separately:
 
-E.g. LLM evaluation uses LLM-as-a-judge style, with deepevals. Running just the encricher tests works as follows:
+E.g. LLM evaluation uses LLM-as-a-judge style, with deepevals. Running just the enricher tests works as follows:
 
 ```python
 uv run deepeval test run tests/evals/test_eval_rag_enricher.py
