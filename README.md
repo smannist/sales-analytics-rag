@@ -4,7 +4,7 @@ Data Warehousing and Business Intelligence course project. Implements a Retrieva
 
 # Architecture
 
-The app is fairly simple example of a RAG pipeline. It consists of retrieval planning, potential follow up answering and enrichener:
+The app is fairly simple example of a RAG pipeline. It consists of retrieval planning, potential follow up answering and enricher:
 
 1. At retrieval planning stage, based on the user query, LLM decides which strategy to use (follow up vs no follow up) and which filters to apply for VectorDB search, e.g. meta filters and the number of documents to retrieve.
 2. If the strategy is follow up, just use history data and answer based on that.
