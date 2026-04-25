@@ -10,7 +10,6 @@ from llm import (
     generate_followup_answer,
     retrieve,
 )
-from utils import rank_by_total_sales
 from vectorstore import get_vectorstore
 
 
@@ -31,7 +30,7 @@ def _run_rag_test(
 ) -> None:
     vectorstore = get_vectorstore()
     plan = determine_retrieval_plan(question, history=[])
-    documents = rank_by_total_sales(retrieve(vectorstore, plan))
+    documents = retrieve(vectorstore, plan)
     actual_output = generate_answer(question, documents, history=[])
 
     correctness = GEval(

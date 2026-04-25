@@ -46,7 +46,8 @@ def calculate_monthly_totals(df: pd.DataFrame) -> pd.DataFrame:
         )
         .reset_index()
         .sort_values(
-            by="Month",
+            by="Total_Sales",
+            ascending=False,
             kind="stable"
         )
     )
@@ -80,18 +81,23 @@ def calculate_yearly_sales(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def calculate_top_categories(df: pd.DataFrame) -> pd.DataFrame:
-    """Calculates the top categories by total revenue.
+    """Calculates top categories by revenue.
 
     Args:
         df: A pandas dataframe.
 
     Returns:
-        A pandas dataframe containing categories ordered by total revenue.
+        A pandas dataframe containing categories by top revenue.
     """
     return (
         df
         .groupby("Category")
-        .agg(Total_Sales=("Sales", "sum"))
+        .agg(
+            Total_Sales=("Sales", "sum"),
+            Total_Profit=("Profit", "sum"),
+            Total_Quantity=("Quantity", "sum"),
+            Avg_Discount=("Discount", "mean"),
+        )
         .reset_index()
         .sort_values(
             by="Total_Sales",
@@ -117,6 +123,8 @@ def calculate_top_sub_categories(df: pd.DataFrame) -> pd.DataFrame:
         .agg(
             Total_Sales=("Sales", "sum"),
             Total_Profit=("Profit", "sum"),
+            Total_Quantity=("Quantity", "sum"),
+            Avg_Discount=("Discount", "mean"),
         )
         .reset_index()
         .assign(

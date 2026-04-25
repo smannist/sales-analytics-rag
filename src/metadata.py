@@ -15,13 +15,69 @@ TRANSACTION_METADATA_FIELDS: list[str] = [
 ]
 
 
-_AGGREGATE_METADATA_BASE: list[str] = ["Total_Sales", "Total_Profit", "Avg_Discount"]
-MONTHLY_METADATA_FIELDS: list[str] = ["Month", "Year", *_AGGREGATE_METADATA_BASE]
-MONTHLY_TOTAL_METADATA_FIELDS: list[str] = ["Month", *_AGGREGATE_METADATA_BASE]
+MONTHLY_METADATA_FIELDS: list[str] = [
+    "Month",
+    "Year",
+    "Total_Sales",
+    "Total_Profit",
+    "Avg_Discount",
+]
+
+
+MONTHLY_TOTAL_METADATA_FIELDS: list[str] = [
+    "Month",
+    "Total_Sales",
+    "Total_Profit",
+    "Avg_Discount",
+]
+
+
 YEARLY_METADATA_FIELDS: list[str] = [
     "Year",
-    *_AGGREGATE_METADATA_BASE,
-    "Total_Quantity"
+    "Total_Sales",
+    "Total_Profit",
+    "Avg_Discount",
+    "Total_Quantity",
+]
+
+
+CATEGORY_METADATA_FIELDS: list[str] = [
+    "Category",
+    "Total_Sales",
+    "Total_Profit",
+    "Avg_Discount",
+    "Total_Quantity",
+]
+
+
+SUB_CATEGORY_METADATA_FIELDS: list[str] = [
+    "Category",
+    "Sub-Category",
+    "Total_Sales",
+    "Total_Profit",
+    "Avg_Discount",
+    "Total_Quantity",
+    "Profit_Margin",
+]
+
+
+REGIONAL_METADATA_FIELDS: list[str] = [
+    "Region",
+    "Total_Sales",
+    "Total_Profit",
+    "Avg_Discount",
+    "Total_Quantity",
+]
+
+
+DISCOUNTED_PRODUCT_METADATA_FIELDS: list[str] = [
+    "Product Name",
+    "Category",
+    "Sub-Category",
+    "Order_Count",
+    "Discounted_Count",
+    "Discount_Rate",
+    "Avg_Discount",
 ]
 
 

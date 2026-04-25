@@ -13,8 +13,12 @@ from aggregates import (
     calculate_yearly_sales,
 )
 from metadata import (
+    CATEGORY_METADATA_FIELDS,
+    DISCOUNTED_PRODUCT_METADATA_FIELDS,
     MONTHLY_METADATA_FIELDS,
     MONTHLY_TOTAL_METADATA_FIELDS,
+    REGIONAL_METADATA_FIELDS,
+    SUB_CATEGORY_METADATA_FIELDS,
     TRANSACTION_METADATA_FIELDS,
     YEARLY_METADATA_FIELDS,
     extract_metadata,
@@ -93,9 +97,12 @@ def monthly_totals(df: pd.DataFrame) -> list[Document]:
         A list of 12 Documents, one per calendar month, summarising
         sales across all years.
     """
+    agg_df = calculate_monthly_totals(df)
+    total = len(agg_df)
     return [
         Document(
             page_content=(
+                f"Ranked #{rank} of {total} months by total sales: "
                 f"Across all years, {calendar.month_name[int(row['Month'])]} "
                 f"(month {int(row['Month'])}) had total sales of "
                 f"${row['Total_Sales']:,.2f} and total profit of "
@@ -108,7 +115,7 @@ def monthly_totals(df: pd.DataFrame) -> list[Document]:
                 "doc_type": "monthly_total",
             },
         )
-        for _, row in calculate_monthly_totals(df).iterrows()
+        for rank, (_, row) in enumerate(agg_df.iterrows(), start=1)
     ]
 
 
@@ -143,124 +150,130 @@ def yearly_sales(df: pd.DataFrame) -> list[Document]:
 
 @document_factory
 def top_categories(df: pd.DataFrame) -> list[Document]:
-    """Builds a Document from top category aggregates.
+    """Builds Documents from per-category sales aggregates.
 
     Args:
         df: The pandas dataframe.
 
     Returns:
-        A list containing a single Document with category revenue summary.
+        A list of Documents, one per category, summarising sales,
+        profit, quantity, and average discount.
     """
+    agg_df = calculate_top_categories(df)
+    total = len(agg_df)
     return [
         Document(
             page_content=(
-                "Top categories by total revenue, "
-                "ranked from highest to lowest:\n"
-                + "\n".join(
-                    f"{idx}. {row['Category']}: "
-                    f"${row['Total_Sales']:,.2f} in total revenue."
-                    for idx, (_, row) in enumerate(
-                        calculate_top_categories(df).iterrows(),
-                        start=1,
-                    )
-                )
+                f"Ranked #{rank} of {total} categories by total sales: "
+                f"Category {row['Category']} had total sales of "
+                f"${row['Total_Sales']:,.2f}, total profit of "
+                f"${row['Total_Profit']:,.2f}, "
+                f"{int(row['Total_Quantity'])} units sold, "
+                f"and an average discount of "
+                f"{row['Avg_Discount'] * 100:.0f}%."
             ),
-            metadata={"doc_type": "category"},
+            metadata={
+                **extract_metadata(row, CATEGORY_METADATA_FIELDS),
+                "doc_type": "category",
+            },
         )
+        for rank, (_, row) in enumerate(agg_df.iterrows(), start=1)
     ]
 
 
 @document_factory
 def top_sub_categories(df: pd.DataFrame) -> list[Document]:
-    """Builds a Document from sub-category profit margin aggregates.
+    """Builds Documents from per-sub-category aggregates.
 
     Args:
         df: The pandas dataframe.
 
     Returns:
-        Sub-categories ranked by profit margin.
+        A list of Documents, one per sub-category, with profit margin,
+        total sales, profit, quantity, and average discount.
     """
+    agg_df = calculate_top_sub_categories(df)
+    total = len(agg_df)
     return [
         Document(
             page_content=(
-                "Sub-categories by profit margin (profit / sales), "
-                "ranked from highest to lowest:\n"
-                + "\n".join(
-                    f"{idx}. {row['Sub-Category']} ({row['Category']}): "
-                    f"{row['Profit_Margin'] * 100:.2f}% margin, "
-                    f"${row['Total_Sales']:,.2f} in total sales, "
-                    f"${row['Total_Profit']:,.2f} in total profit."
-                    for idx, (_, row) in enumerate(
-                        calculate_top_sub_categories(df).iterrows(),
-                        start=1,
-                    )
-                )
+                f"Ranked #{rank} of {total} sub-categories by profit margin: "
+                f"Sub-category {row['Sub-Category']} "
+                f"({row['Category']}) had a profit margin of "
+                f"{row['Profit_Margin'] * 100:.2f}% "
+                f"on ${row['Total_Sales']:,.2f} in total sales, "
+                f"${row['Total_Profit']:,.2f} in total profit, "
+                f"{int(row['Total_Quantity'])} units sold, "
+                f"and an average discount of "
+                f"{row['Avg_Discount'] * 100:.0f}%."
             ),
-            metadata={"doc_type": "sub_category"},
+            metadata={
+                **extract_metadata(row, SUB_CATEGORY_METADATA_FIELDS),
+                "doc_type": "sub_category",
+            },
         )
+        for rank, (_, row) in enumerate(agg_df.iterrows(), start=1)
     ]
 
 
 @document_factory
 def regional_sales(df: pd.DataFrame) -> list[Document]:
-    """Builds a Document from regional sales performance aggregates.
+    """Builds Documents from per-region sales aggregates.
 
     Args:
         df: The pandas dataframe.
 
     Returns:
-        A list containing a single Document with sales performance by region.
+        A list of Documents, one per region, with total sales, profit,
+        quantity, and average discount.
     """
     return [
         Document(
             page_content=(
-                "Sales performance by region, "
-                "ranked from highest to lowest total sales:\n"
-                + "\n".join(
-                    f"{idx}. {row['Region']}: "
-                    f"${row['Total_Sales']:,.2f} in total sales, "
-                    f"${row['Total_Profit']:,.2f} in total profit, "
-                    f"{int(row['Total_Quantity'])} units sold, "
-                    f"average discount of {row['Avg_Discount'] * 100:.0f}%."
-                    for idx, (_, row) in enumerate(
-                        calculate_regional_sales(df).iterrows(),
-                        start=1,
-                    )
-                )
+                f"Region {row['Region']} had total sales of "
+                f"${row['Total_Sales']:,.2f}, total profit of "
+                f"${row['Total_Profit']:,.2f}, "
+                f"{int(row['Total_Quantity'])} units sold, "
+                f"and an average discount of "
+                f"{row['Avg_Discount'] * 100:.0f}%."
             ),
-            metadata={"doc_type": "regional"},
+            metadata={
+                **extract_metadata(row, REGIONAL_METADATA_FIELDS),
+                "doc_type": "regional",
+            },
         )
+        for _, row in calculate_regional_sales(df).iterrows()
     ]
 
 
 @document_factory
 def top_discounted_products(df: pd.DataFrame) -> list[Document]:
-    """Builds a Document listing the top 10 most frequently discounted products.
+    """Builds Documents for the top 10 most frequently discounted products.
 
     Args:
         df: The pandas dataframe.
 
     Returns:
-        A list containing a single Document with the top 10 products
-        most frequently sold at a discount.
+        A list of 10 Documents, one per product, ranked by discount rate.
     """
+    agg_df = calculate_top_discounted_products(df)
+    total = len(agg_df)
     return [
         Document(
             page_content=(
-                "Top 10 products most frequently sold at a discount:\n"
-                + "\n".join(
-                    f"{idx}. {row['Product Name']} "
-                    f"({row['Sub-Category']}, {row['Category']}): "
-                    f"discounted in {int(row['Discounted_Count'])} of "
-                    f"{int(row['Order_Count'])} orders "
-                    f"({row['Discount_Rate'] * 100:.0f}% discount rate), "
-                    f"average discount {row['Avg_Discount'] * 100:.0f}%."
-                    for idx, (_, row) in enumerate(
-                        calculate_top_discounted_products(df).iterrows(),
-                        start=1,
-                    )
-                )
+                f"Ranked #{rank} of {total} products by discount rate: "
+                f"Product {row['Product Name']} "
+                f"({row['Sub-Category']}, {row['Category']}) was "
+                f"discounted in {int(row['Discounted_Count'])} of "
+                f"{int(row['Order_Count'])} orders "
+                f"({row['Discount_Rate'] * 100:.0f}% discount rate), "
+                f"with an average discount of "
+                f"{row['Avg_Discount'] * 100:.0f}%."
             ),
-            metadata={"doc_type": "discounted_product"},
+            metadata={
+                **extract_metadata(row, DISCOUNTED_PRODUCT_METADATA_FIELDS),
+                "doc_type": "discounted_product",
+            },
         )
+        for rank, (_, row) in enumerate(agg_df.iterrows(), start=1)
     ]
