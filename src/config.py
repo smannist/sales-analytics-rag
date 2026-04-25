@@ -41,6 +41,12 @@ class OpenAIConfig:
     MODEL = "gpt-5-nano"
 
 
+class GroqConfig:
+    """Stores Groq constants."""
+    MODEL = "openai/gpt-oss-120b"
+    BASE_URL = "https://api.groq.com/openai/v1"
+
+
 class ChatHistoryConfig:
     """Stores chat history constants."""
     MAX_HISTORY_TOKENS = 6000

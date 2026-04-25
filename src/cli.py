@@ -1,10 +1,11 @@
 from dataclasses import dataclass
 
 import pandas as pd
+import tiktoken
 import typer
 from langchain_chroma import Chroma
 from langchain_core.chat_history import InMemoryChatMessageHistory
-from langchain_core.messages import trim_messages
+from langchain_core.messages import BaseMessage, trim_messages
 from rich.markdown import Markdown
 from rich.panel import Panel
 from rich.text import Text
@@ -18,7 +19,6 @@ from llm import (
     determine_retrieval_plan,
     generate_answer,
     generate_followup_answer,
-    model,
     retrieve,
 )
 from registry import load_document_factories
@@ -30,6 +30,7 @@ from vectorstore import (
 
 
 app = typer.Typer(rich_markup_mode="rich")
+_encoding = tiktoken.get_encoding("cl100k_base")
 
 
 @dataclass(frozen=True)
@@ -71,7 +72,7 @@ def run(ctx: typer.Context) -> None:
             chat_history.messages,
             max_tokens=ChatHistoryConfig.MAX_HISTORY_TOKENS,
             strategy="last",
-            token_counter=model,
+            token_counter=_count_tokens,
             start_on="human",
             include_system=False,
         )
@@ -180,3 +181,8 @@ def _build_vectorstore(
         console.print(CliMessage.INSERTED, style="green")
 
     return vectorstore
+
+
+def _count_tokens(messages: list[BaseMessage]) -> int:
+    """Count tokens, works for Groq, too"""
+    return sum(len(_encoding.encode(m.text)) for m in messages)

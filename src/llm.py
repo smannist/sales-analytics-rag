@@ -1,3 +1,5 @@
+import json
+import os
 from collections import defaultdict
 from enum import StrEnum
 from typing import Literal
@@ -8,15 +10,22 @@ from langchain_core.documents import Document
 from langchain_core.messages import BaseMessage, HumanMessage, SystemMessage
 from langchain_openai import ChatOpenAI
 from langsmith import traceable
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, SecretStr
 
-from config import OpenAIConfig
+from config import GroqConfig, OpenAIConfig
 from utils import load_file
 
 load_dotenv(override=True)
 
 
-model = ChatOpenAI(model_name=OpenAIConfig.MODEL)
+if os.getenv("OPENAI_API_KEY"):
+    model = ChatOpenAI(model_name=OpenAIConfig.MODEL)
+else:
+    model = ChatOpenAI(
+        model_name=GroqConfig.MODEL,
+        openai_api_base=GroqConfig.BASE_URL,
+        openai_api_key=SecretStr(os.environ["GROQ_API_KEY"]),
+    )
 
 
 PROMPT_RETRIEVAL_STRATEGY = load_file("prompts/retrieval_strategy.txt")
@@ -90,11 +99,17 @@ def determine_retrieval_plan(
         The full retrieval plan.
     """
     try:
-        structured_model = model.with_structured_output(RetrievalPlan)
+        structured_model = model.with_structured_output(
+            RetrievalPlan, method="json_mode"
+        )
         return structured_model.invoke(  # type: ignore[return-value]
             [
                 SystemMessage(
-                    content=PROMPT_RETRIEVAL_STRATEGY
+                    content=(
+                        PROMPT_RETRIEVAL_STRATEGY
+                        + "\n\nReturn ONLY a JSON object matching this schema:\n" # Grok doesn't work without specifying the JSON schema, this is simplest fix to work for both afaik
+                        + json.dumps(RetrievalPlan.model_json_schema())
+                    )
                 ),
                 *history,
                 HumanMessage(

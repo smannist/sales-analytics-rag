@@ -16,3 +16,5 @@
 - gpt-5-nano seems to do better than gpt-4o-mini being cheaper, since its a reasoning model. But boy is it slow, too.
 - with current prompts and chunking setup - gpt-4o-mini can mess up some rankings, but not really hallucinate
 - gpt-4.1-mini pretty much perfect, but costs 3x more than gpt-4o-mini
+- Works super well with Groq's most performant model (openai/gpt-oss-120b)
+- Groq needs JSON mode
