@@ -38,7 +38,7 @@ class VectorDBConfig:
 
 class OpenAIConfig:
     """Stores OpenAI constants."""
-    MODEL = "gpt-4o-mini"
+    MODEL = "gpt-5-nano"
 
 
 class ChatHistoryConfig:

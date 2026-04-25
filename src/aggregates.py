@@ -41,15 +41,8 @@ def calculate_monthly_totals(df: pd.DataFrame) -> pd.DataFrame:
         .groupby("Month")
         .agg(
             Total_Sales=("Sales", "sum"),
-            Total_Profit=("Profit", "sum"),
-            Avg_Discount=("Discount", "mean"),
         )
         .reset_index()
-        .sort_values(
-            by="Total_Sales",
-            ascending=False,
-            kind="stable"
-        )
     )
 
 
@@ -80,14 +73,14 @@ def calculate_yearly_sales(df: pd.DataFrame) -> pd.DataFrame:
     )
 
 
-def calculate_top_categories(df: pd.DataFrame) -> pd.DataFrame:
-    """Calculates top categories by revenue.
+def calculate_category_aggregates(df: pd.DataFrame) -> pd.DataFrame:
+    """Calculates categories by revenue.
 
     Args:
         df: A pandas dataframe.
 
     Returns:
-        A pandas dataframe containing categories by top revenue.
+        A pandas dataframe containing categories by revenue.
     """
     return (
         df
@@ -99,23 +92,18 @@ def calculate_top_categories(df: pd.DataFrame) -> pd.DataFrame:
             Avg_Discount=("Discount", "mean"),
         )
         .reset_index()
-        .sort_values(
-            by="Total_Sales",
-            ascending=False,
-            kind="stable"
-        )
     )
 
 
-def calculate_top_sub_categories(df: pd.DataFrame) -> pd.DataFrame:
-    """Calculates sub-categories ranked by profit margin.
+def calculate_sub_category_margins(df: pd.DataFrame) -> pd.DataFrame:
+    """Calculates per-sub-category profit margin.
 
     Args:
         df: A pandas dataframe.
 
     Returns:
-        A pandas dataframe containing sub-categories ordered by
-        profit margin (profit / sales).
+        A pandas dataframe with one row per sub-category and its profit
+        margin (profit / sales).
     """
     return (
         df
@@ -123,18 +111,12 @@ def calculate_top_sub_categories(df: pd.DataFrame) -> pd.DataFrame:
         .agg(
             Total_Sales=("Sales", "sum"),
             Total_Profit=("Profit", "sum"),
-            Total_Quantity=("Quantity", "sum"),
-            Avg_Discount=("Discount", "mean"),
         )
         .reset_index()
         .assign(
             Profit_Margin=lambda d: d["Total_Profit"] / d["Total_Sales"]
         )
-        .sort_values(
-            by="Profit_Margin",
-            ascending=False,
-            kind="stable"
-        )
+        [["Category", "Sub-Category", "Profit_Margin"]]
     )
 
 
@@ -157,11 +139,6 @@ def calculate_regional_sales(df: pd.DataFrame) -> pd.DataFrame:
             Avg_Discount=("Discount", "mean"),
         )
         .reset_index()
-        .sort_values(
-            by="Total_Sales",
-            ascending=False,
-            kind="stable"
-        )
     )
 
 

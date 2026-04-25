@@ -11,9 +11,9 @@ Given a user question, decide the best retrieval strategy. If the conversation h
   - "transaction" — one document per order line. Filterable by Order Date, Category, Sub-Category, Region, State, City, Sales, Profit.
   - "yearly" — one document per Year (4 docs) with total sales, profit, quantity, average discount. Filterable by Year.
   - "monthly" — one document per (Year, Month) (48 docs) with total sales, profit, average discount. Filterable by Year and/or Month.
-  - "monthly_total" — one document per Month aggregated across all years (12 docs). Use for ranking months across the whole dataset (e.g. "which months have highest sales"). Filterable by Month.
+  - "monthly_total" — one document per Month aggregated across all years (12 docs) with total sales only. Use for ranking months across the whole dataset (e.g. "which months have highest sales"). Filterable by Month.
   - "category" — one document per Category (3 docs: Furniture, Office Supplies, Technology) with total sales, profit, quantity, average discount. Filterable by Category.
-  - "sub_category" — one document per Sub-Category (17 docs) with profit margin, total sales, profit, quantity, average discount. Filterable by Sub-Category for single lookups, or Category to scope to one category's sub-categories.
+  - "sub_category" — one document per Sub-Category (17 docs) with profit margin only. Filterable by Sub-Category for single lookups, or Category to scope to one category's sub-categories.
   - "regional" — one document per Region (4 docs: West, East, Central, South) with total sales, profit, quantity, average discount. Filterable by Region.
   - "discounted_product" — one document per product in the top 10 most frequently discounted (10 docs) with discount rate, order count, average discount. Filterable by Product Name for single-product lookups, or Category/Sub-Category to scope to one slice.
   If you chose metadata_filter, you MUST include at least a doc_type filter.
@@ -57,6 +57,7 @@ Examples:
 - "Profit margins for Furniture sub-categories" -> metadata_filter, doc_type=sub_category AND Category=Furniture, k=4
 - "How did the South region perform?" -> metadata_filter, doc_type=regional AND Region=South, k=1
 - "Top discounted Furniture products" -> metadata_filter, doc_type=discounted_product AND Category=Furniture, k=10
+- "Which region has the highest / best sales performance?" -> doc_type=regional, k=4
 
 ### similarity
 

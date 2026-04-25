@@ -12,3 +12,7 @@
 - Memory on average is really costly, since we need to keep the messages in context window.
 - LangSmith has built-in evaluators, but require a lot more setup, and afaik can't be run through the console or git pipeline,
   which is why I just used deepeval as an example. Doesn't really matter here, but in a production environment, it might be the better choice.
+- For smaller models, less data is more, since the LLMs have less things to figure out. Should mention in sub-categories margin and total month profit report sect.
+- gpt-5-nano seems to do better than gpt-4o-mini being cheaper, since its a reasoning model. But boy is it slow, too.
+- with current prompts and chunking setup - gpt-4o-mini can mess up some rankings, but not really hallucinate
+- gpt-4.1-mini pretty much perfect, but costs 3x more than gpt-4o-mini

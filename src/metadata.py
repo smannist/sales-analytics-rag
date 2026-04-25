@@ -27,8 +27,6 @@ MONTHLY_METADATA_FIELDS: list[str] = [
 MONTHLY_TOTAL_METADATA_FIELDS: list[str] = [
     "Month",
     "Total_Sales",
-    "Total_Profit",
-    "Avg_Discount",
 ]
 
 
@@ -53,10 +51,6 @@ CATEGORY_METADATA_FIELDS: list[str] = [
 SUB_CATEGORY_METADATA_FIELDS: list[str] = [
     "Category",
     "Sub-Category",
-    "Total_Sales",
-    "Total_Profit",
-    "Avg_Discount",
-    "Total_Quantity",
     "Profit_Margin",
 ]
 
