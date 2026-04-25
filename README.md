@@ -97,6 +97,6 @@ pytest tests/units
 
 Example evaluator run with deepevals on CLI:
 
-![eval](docs/evals.png)
+![eval](docs/deepeval_openai_nano5.png)
 
 Evaluator defaults to gpt-4.1, but can be changed in test files.
