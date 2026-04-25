@@ -17,6 +17,9 @@ from utils import load_file
 
 load_dotenv(override=True)
 
+# just always use tracing, if langsmith is present
+if os.getenv("LANGSMITH_API_KEY"):
+    os.environ["LANGSMITH_TRACING"] = "true"
 
 if os.getenv("GROQ_API_KEY"):
     model = ChatOpenAI(
