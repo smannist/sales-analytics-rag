@@ -18,14 +18,14 @@ from utils import load_file
 load_dotenv(override=True)
 
 
-if os.getenv("OPENAI_API_KEY"):
-    model = ChatOpenAI(model_name=OpenAIConfig.MODEL)
-else:
+if os.getenv("GROQ_API_KEY"):
     model = ChatOpenAI(
         model_name=GroqConfig.MODEL,
         openai_api_base=GroqConfig.BASE_URL,
         openai_api_key=SecretStr(os.environ["GROQ_API_KEY"]),
     )
+else:
+    model = ChatOpenAI(model_name=OpenAIConfig.MODEL)
 
 
 PROMPT_RETRIEVAL_STRATEGY = load_file("prompts/retrieval_strategy.txt")
