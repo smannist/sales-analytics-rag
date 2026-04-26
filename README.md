@@ -94,9 +94,3 @@ Unit tests use pytest, and runs with:
 ```python
 pytest tests/units
 ```
-
-Example evaluator run with deepevals on CLI:
-
-![eval](docs/deepeval_openai_nano5.png)
-
-Evaluator defaults to gpt-4.1, but can be changed in test files.
