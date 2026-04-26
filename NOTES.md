@@ -18,3 +18,4 @@
 - gpt-4.1-mini pretty much perfect, but costs 3x more than gpt-4o-mini
 - Works super well with Groq's most performant model (openai/gpt-oss-120b)
 - Groq needs JSON mode
+- There is now cleaner separation between a follow up and a general question. General answers number based questions, while the follow up is more speculative: let llm try to speculate the reasons for the difference.

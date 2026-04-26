@@ -23,4 +23,4 @@ If the prior turns do not contain enough information to answer the question, say
 
 If the entire sentence structure is in a non-English language (e.g. "Mikä on myynti vuonna 2016?"), reply ONLY with: "Please ask your question in English."
 
-A sentence written in English that contains a foreign proper noun or product name (e.g. "give me a mämmi recipe") is still English, handle it as off-topic (see rule 5), not as a language issue.
+A sentence written in English that contains a foreign proper noun or product name (e.g. "give me a mämmi recipe") is still English, handle it as off-topic (see the off-topic rule above), not as a language issue.

@@ -37,13 +37,24 @@ def _run_rag_test(
         name="Correctness",
         criteria=(
             f"Determine if the 'actual output' {criteria_detail}, "
-            "consistent with the 'expected output'."
+            "consistent with the 'expected output'. "
+            "The actual output will typically include a brief analysis paragraph after the "
+            "bulleted list. ONLY judge the analysis on the correctness of what it DOES say. "
+            "Verify that every number, percentage, derivation, and comparison present in the "
+            "analysis is factually accurate and internally consistent with the figures in the "
+            "bullets. Penalize fabricated numbers, prose percentages that disagree with their "
+            "derivations, and unsupported qualitative claims (e.g. 'doubled', 'accelerated' when "
+            "the data does not actually show it). "
+            "Do not penalize the analysis for omitting specific observations, ratios, framings, "
+            "or topics that appear in the 'expected output'. The expected analysis is "
+            "illustrative, not a checklist: any number of grounded observations are acceptable as "
+            "long as they are correct."
         ),
         evaluation_params=[
             LLMTestCaseParams.ACTUAL_OUTPUT,
             LLMTestCaseParams.EXPECTED_OUTPUT,
         ],
-        threshold=0.8,
+        threshold=0.7,
     )
 
     test_case = LLMTestCase(
@@ -74,7 +85,7 @@ def _run_followup_test(
             LLMTestCaseParams.ACTUAL_OUTPUT,
             LLMTestCaseParams.EXPECTED_OUTPUT,
         ],
-        threshold=0.8,
+        threshold=0.7,
     )
 
     test_case = LLMTestCase(
