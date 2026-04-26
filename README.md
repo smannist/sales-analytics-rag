@@ -18,54 +18,62 @@ The app can provide answer to questions related to the superstore dataset, such 
 
 1. What is the sales trend over the 4-year period?
 2. Which months show the highest sales? Is there seasonality?
-3. Which product category generates the most revenue?
+3. Which product categories generate the most revenue?
 4. What sub-categories have the highest profit margins?
-5. Which region has the best sales performance?
-6. Compare Technology vs. Furniture sales trends
-7. How does the West region compare to the East in terms of profit?
-8. Any user follow up questions, e.g., "Why does west perform better than ...."
+5. Which regions have the best sales performance?
+6. Compare Technology vs. Furniture sales
+7. How does the West region compare to the East in terms of sales?
+8. Any user follow up questions, e.g., "Why does November perform better than ...."
 
 Note: the app is not really production ready, but more like a demoing app for demonstrating how RAG works and how LLMs can be used for simple analytics.
 
 # Setup
 
-1. Ready virtual environment
+### 1. Ready virtual environment
 
-```Python
+```bash
 python3 -m venv .venv
 ```
 
-2. Activate virtual environment
+### 2. Activate virtual environment
 
-```Python
+```bash
 source .venv/bin/activate
 ```
 
-3. Install uv (if you don't already have it)
+### 3. Install dependencies
 
-```Python
+Either via uv (skip the first command if you already have uv installed):
+
+```bash
 pip install uv
 ```
 
-4. Install dependencies
-
-```python
+```bash
 uv sync
+```
+
+Or with plain pip via requirements.txt:
+
+```bash
+pip install -r requirements.txt
 ```
 
 # Running the app
 
 This assumes that you are running the command from the root folder.
 
-```python
+```bash
 python3 src/app.py run
 ```
+
+**Note:** if you are not using uv, drop the `uv run` prefix from the commands below. The tools (`ruff`, `ty`, `deepeval`, `pytest`) are on your PATH once the venv is activated.
 
 # Linting
 
 The app uses Ruff, which you can run by doing:
 
-```python
+```bash
 uv run ruff check
 ```
 
@@ -73,7 +81,7 @@ uv run ruff check
 
 To type check the source folder, run this from root:
 
-```python
+```bash
 uv run ty check --error all ./src
 ```
 
@@ -83,7 +91,7 @@ The app contains a few tests, it's recommended to run them separately:
 
 E.g. LLM evaluation uses LLM-as-a-judge style, with deepevals. Running just the enricher tests works as follows:
 
-```python
+```bash
 uv run deepeval test run tests/evals/test_eval_rag_enricher.py
 ```
 
@@ -91,6 +99,6 @@ these can also be explored more deeply at DeepEval website, but requires an API 
 
 Unit tests use pytest, and runs with:
 
-```python
+```bash
 pytest tests/units
 ```
