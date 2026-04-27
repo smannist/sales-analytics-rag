@@ -16,3 +16,5 @@ ruff>=0.15.6
 ty>=0.0.24
 typer>=0.16.0
 deepeval>=3.9.7
+langchain-huggingface>=0.0.3
+sentence-transformers>=5.4.1
