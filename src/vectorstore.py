@@ -1,7 +1,7 @@
 from collections.abc import Iterator
 
 import chromadb
-from chromadb.utils.embedding_functions import DefaultEmbeddingFunction
+from chromadb.utils.embedding_functions.onnx_mini_lm_l6_v2 import ONNXMiniLM_L6_V2
 from langchain_chroma import Chroma
 from langchain_core.documents import Document
 from langchain_core.embeddings import Embeddings
@@ -12,11 +12,20 @@ from config import VectorDBConfig
 # could use sentence-transformers package, but its gigantic
 # default seems fine, so no need to use openai either in this simple app
 class ChromaOnnxEmbeddings(Embeddings):
-    """LC wrapper around Chroma's default all-MiniLM-L6-v2 embeddings."""
+    """LC wrapper around Chroma's default all-MiniLM-L6-v2 embeddings.
+
+    Also shrinks tokenizer padding/truncation from Chroma's 256-token default
+    to 112. Our longest doc tokenizes to ~95 tokens, so the default wasted a
+    lot of compute padding short docs out to 256. This made insertion very slow.
+    Bump the value if longer docs are added.
+    """
 
     def __init__(self) -> None:
         """The initializer."""
-        self._fn = DefaultEmbeddingFunction()
+        self._fn = ONNXMiniLM_L6_V2()
+        self._fn._download_model_if_not_exists()
+        self._fn.tokenizer.enable_padding(pad_id=0, pad_token="[PAD]", length=112)
+        self._fn.tokenizer.enable_truncation(max_length=112)
 
     def embed_documents(self, texts: list[str]) -> list[list[float]]:
         """Embed a list of texts into vector representations.

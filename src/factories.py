@@ -40,14 +40,14 @@ def transactions(df: pd.DataFrame) -> list[Document]:
     return [
         Document(
             page_content=(
-                f"On {row['Order Date']}, a {row['Segment']} customer based in "
-                f"{row['City']}, {row['State']} ({row['Region']} region) "
-                f"purchased {row['Product Name']} "
+                f"{row['Order Date']}: {row['Segment']} customer in "
+                f"{row['City']}, {row['State']} ({row['Region']}). "
+                f"Bought {row['Product Name']} "
                 f"({row['Sub-Category']}, {row['Category']}). "
-                f"{row['Quantity']} unit(s) sold at ${row['Sales']:.2f} "
-                f"with a {row['Discount'] * 100:.0f}% discount, "
-                f"yielding a profit of ${row['Profit']:.2f}. "
-                f"Shipped via {row['Ship Mode']}."
+                f"Qty {row['Quantity']}, ${row['Sales']:.2f} sales, "
+                f"{row['Discount'] * 100:.0f}% discount, "
+                f"${row['Profit']:.2f} profit. "
+                f"Via {row['Ship Mode']}."
             ),
             metadata={
                 **extract_metadata(row, TRANSACTION_METADATA_FIELDS),
