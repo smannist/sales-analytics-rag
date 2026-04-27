@@ -184,5 +184,9 @@ def _build_vectorstore(
 
 
 def _count_tokens(messages: list[BaseMessage]) -> int:
-    """Count tokens, works for Groq, too"""
+    """Count tokens, works for Groq, too.
+
+    Returns:
+        The total token count across all messages.
+    """
     return sum(len(_encoding.encode(m.text)) for m in messages)

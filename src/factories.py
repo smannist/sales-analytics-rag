@@ -4,12 +4,12 @@ import pandas as pd
 from langchain_core.documents import Document
 
 from aggregates import (
+    calculate_category_aggregates,
     calculate_monthly_sales,
     calculate_monthly_totals,
     calculate_regional_sales,
-    calculate_category_aggregates,
-    calculate_top_discounted_products,
     calculate_sub_category_margins,
+    calculate_top_discounted_products,
     calculate_yearly_sales,
 )
 from metadata import (

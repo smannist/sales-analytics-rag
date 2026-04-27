@@ -77,6 +77,7 @@ def test_west_vs_east_profit(run_rag_test) -> None:
         ),
     )
 
+
 def test_sales_trend(run_rag_test) -> None:
     run_rag_test(
         question="What is the sales trend over the 4-year period?",

@@ -1,16 +1,14 @@
 from pathlib import Path
 
 
-def load_file(path: str) -> str:
+def load_file(file: str, path: str) -> str:
     """Loads a text file.
 
     Args:
-        path: Path to the text file, absolute or relative to this script.
+        file: The boilerplate caller file.
+        path: Relative path to the text file.
 
     Returns:
         The contents of the file.
     """
-    file_path = Path(path)
-    if not file_path.is_absolute():
-        file_path = Path(__file__).parent / path
-    return file_path.read_text(encoding="utf-8")
+    return (Path(file).parent / path).read_text(encoding="utf-8")

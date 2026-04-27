@@ -1,6 +1,6 @@
 import pandas as pd
 
-from aggregates import calculate_regional_sales, calculate_top_sub_categories
+from aggregates import calculate_regional_sales, calculate_sub_category_margins
 
 
 def test_regional_sales_computed_correctly() -> None:
@@ -18,13 +18,13 @@ def test_regional_sales_computed_correctly() -> None:
     assert list(result["Total_Quantity"]) == [3, 2]
 
 
-def test_top_sub_categories_computed_correctly() -> None:
+def test_sub_category_margins_computed_correctly() -> None:
     df = pd.DataFrame({
         "Category": ["Office Supplies", "Office Supplies", "Technology"],
         "Sub-Category": ["Labels", "Labels", "Phones"],
         "Sales": [100.0, 100.0, 500.0],
         "Profit": [40.0, 50.0, 50.0],
     })
-    result = calculate_top_sub_categories(df)
+    result = calculate_sub_category_margins(df)
     assert list(result["Sub-Category"]) == ["Labels", "Phones"]
     assert list(result["Profit_Margin"]) == [0.45, 0.1]

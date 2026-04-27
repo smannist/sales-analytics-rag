@@ -4,15 +4,11 @@ Data Warehousing and Business Intelligence course project. Implements a Retrieva
 
 # Architecture
 
-The app is fairly simple example of a RAG pipeline. It consists of retrieval planning, potential follow up answering and enricher:
+The app is fairly simple example of a RAG pipeline. It consists of retrieval planning and answer generation (with follow-up shortcut).
 
 1. At retrieval planning stage, based on the user query, LLM decides which strategy to use (follow up vs no follow up) and which filters to apply for VectorDB search, e.g. meta filters and the number of documents to retrieve.
 2. If the strategy is follow up, just use history data and answer based on that.
 3. Otherwise, retrieve document(s) from the vector database, and use the documents as a context for the final output.
-
-Roughly this looks like:
-
-![arch](docs/arch_flow.png)
 
 The app can provide answer to questions related to the superstore dataset, such as:
 
@@ -29,19 +25,25 @@ Note: the app is not really production ready, but more like a demoing app for de
 
 # Setup
 
-### 1. Ready virtual environment
+### 1. Set environmental variables
+
+Make sure that you have environmental variables set up.
+
+.env.example provides a guide for this. But in short, you'll only need either a GROQ_API_KEY or OPENAI_API_KEY set in your .env file.
+
+### 2. Ready virtual environment
 
 ```bash
 python3 -m venv .venv
 ```
 
-### 2. Activate virtual environment
+### 3. Activate virtual environment
 
 ```bash
 source .venv/bin/activate
 ```
 
-### 3. Install dependencies
+### 4. Install dependencies
 
 Either via uv (skip the first command if you already have uv installed):
 
@@ -67,22 +69,24 @@ This assumes that you are running the command from the root folder.
 python3 src/app.py run
 ```
 
-**Note:** if you are not using uv, drop the `uv run` prefix from the commands below. The tools (`ruff`, `ty`, `deepeval`, `pytest`) are on your PATH once the venv is activated.
+# Note about the sections below
+
+Depending on what you are using (uv vs pip) use `uv run` or `python3` prefix in front of the commands.
 
 # Linting
 
 The app uses Ruff, which you can run by doing:
 
 ```bash
-uv run ruff check
+ruff check
 ```
 
 # Type check
 
-To type check the source folder, run this from root:
+Ty is used for type checking, run this from root:
 
 ```bash
-uv run ty check --error all ./src
+ty check --error all ./src
 ```
 
 # Testing
@@ -92,7 +96,7 @@ The app contains a few tests, it's recommended to run them separately:
 E.g. LLM evaluation uses LLM-as-a-judge style, with deepevals. Running just the enricher tests works as follows:
 
 ```bash
-uv run deepeval test run tests/evals/test_eval_rag_enricher.py
+deepeval test run tests/evals/test_eval_rag_enricher.py
 ```
 
 these can also be explored more deeply at DeepEval website, but requires an API KEY.

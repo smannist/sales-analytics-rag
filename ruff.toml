@@ -36,6 +36,14 @@ convention = "google"
     "FBT",     # Don't care about booleans as positional arguments in tests, e.g. via @pytest.mark.parametrize()
     "PLR2004", # Magic value used in comparison, ...
     "S311",    # Standard pseudo-random generators are not suitable for cryptographic purposes
+    "ANN001",  # Fixture args don't need annotations
+    "D103",    # Test functions don't need docstrings
+    "E501",    # Long expected-output / criteria strings are fine
+]
+"conftest.py" = [
+    "ANN201",  # Fixtures don't need return annotations
+    "D103",    # Fixtures don't need docstrings
+    "DOC201",  # Fixtures don't need a documented Returns section
 ]
 "cli.py" = ["I001"]
 "registry.py" = ["I001"]

@@ -31,9 +31,9 @@ else:
     model = ChatOpenAI(model_name=OpenAIConfig.MODEL)
 
 
-PROMPT_RETRIEVAL_STRATEGY = load_file("prompts/retrieval_strategy.txt")
-PROMPT_DATA_ENRICHER = load_file("prompts/data_enricher.txt")
-PROMPT_FOLLOWUP_ANSWER = load_file("prompts/followup_answer.txt")
+PROMPT_RETRIEVAL_STRATEGY = load_file(__file__, "prompts/retrieval_strategy.txt")
+PROMPT_DATA_ENRICHER = load_file(__file__, "prompts/data_enricher.txt")
+PROMPT_FOLLOWUP_ANSWER = load_file(__file__, "prompts/followup_answer.txt")
 
 
 class MetadataFilter(BaseModel):
@@ -110,7 +110,9 @@ def determine_retrieval_plan(
                 SystemMessage(
                     content=(
                         PROMPT_RETRIEVAL_STRATEGY
-                        + "\n\nReturn ONLY a JSON object matching this schema:\n" # Grok doesn't work without specifying the JSON schema, this is simplest fix to work for both afaik
+                        # For Grok, JSON schema needs to specified, or it fails
+                        # this works, but might be better alts
+                        + "\n\nReturn ONLY a JSON object matching this schema:\n"
                         + json.dumps(RetrievalPlan.model_json_schema())
                     )
                 ),

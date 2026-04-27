@@ -1,13 +1,14 @@
 from langchain_core.messages import AIMessage, HumanMessage
 
-
 REGION_PROFIT_HISTORY = [
     HumanMessage(
         content="How does the West region compare to the East in terms of profit?"
     ),
     AIMessage(
-        content=
-            "The West region is more profitable than the East: $108,418 in profit versus $91,523."
+        content=(
+            "The West region is more profitable than the East: "
+            "$108,418 in profit versus $91,523."
+        ),
     ),
 ]
 
