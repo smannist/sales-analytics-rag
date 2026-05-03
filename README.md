@@ -43,6 +43,8 @@ python3 -m venv .venv
 source .venv/bin/activate
 ```
 
+(if you are using Windows, this might be slightly different)
+
 ### 4. Install dependencies
 
 Either via uv (skip the first command if you already have uv installed):
