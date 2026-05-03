@@ -39,7 +39,7 @@ def get_vectorstore() -> Chroma:
         client=chromadb.PersistentClient(path=VectorDBConfig.PATH),
         collection_name=VectorDBConfig.COLLECTION_NAME,
         embedding_function=HuggingFaceEmbeddings(
-            model_name="all-MiniLM-L6-v2"
+            model_name=VectorDBConfig.EMBEDDING_MODEL
         ),
     )
 

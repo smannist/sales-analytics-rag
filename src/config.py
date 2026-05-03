@@ -34,6 +34,7 @@ class VectorDBConfig:
     PATH = "./chroma_db"
     COLLECTION_NAME = "superstore"
     INSERTION_BATCH_SIZE = 500
+    EMBEDDING_MODEL = "all-MiniLM-L6-v2"
 
 
 class OpenAIConfig:
